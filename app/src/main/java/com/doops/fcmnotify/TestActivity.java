@@ -2,8 +2,11 @@ package com.doops.fcmnotify;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+
+import static com.doops.fcmnotify.MyFirebaseMessagingService.DATA;
 
 public class TestActivity extends AppCompatActivity {
 
@@ -14,10 +17,21 @@ public class TestActivity extends AppCompatActivity {
         setContentView(R.layout.activity_test);
 
         if (getIntent().getExtras() != null) {
-            Log.e(TAG, "onStart: "+getIntent().getExtras().get("message"));
-            Log.e(TAG, "onStart: "+getIntent().getExtras().get("title"));
-            Log.e(TAG, "onStart: "+getIntent().getExtras().get("action"));
+            NotificationData data = (NotificationData) getIntent().getSerializableExtra(DATA);
 
+            assert data != null;
+            Log.e(TAG, "onStart: "+data.getTitle());
+            Log.e(TAG, "onStart: "+data.getMessage());
+            Log.e(TAG, "onStart: "+getIntent().getAction());
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (getIntent().getExtras()!=null){
+            Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
         }
     }
 }

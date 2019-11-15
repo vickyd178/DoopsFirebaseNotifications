@@ -22,6 +22,7 @@ import java.util.Map;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
     public static final String TITLE = "title";
+    public static final String DATA = "data";
     private static final String MESSAGE = "message";
     private static final String ACTION = "action";
     private static final String TAG = "MyFirebaseMsgService";
@@ -34,7 +35,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             data = remoteMessage.getData();
         }
         assert data != null;
-        sendNotification(data.get("title"),data.get("message"),ACTION);
+        NotificationData notifyData = new NotificationData(data.get(TITLE),data.get(MESSAGE),data.get(ACTION));
+        sendNotification(notifyData);
     }
 
     @Override
@@ -52,12 +54,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      *
      */
 
-    private void sendNotification(String title,String message,String action) {
+    private void sendNotification(NotificationData data) {
         Intent intent = new Intent(this, TestActivity.class);
 
-        intent.setAction(action);
-        intent.putExtra(TITLE,title);
-        intent.putExtra(MESSAGE,message);
+        intent.setAction(data.getAction());
+        intent.putExtra(DATA,data.getTitle());
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
@@ -68,16 +69,16 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 new NotificationCompat.Builder(this, channelId)
                         .setSmallIcon(R.drawable.ic_stat_ic_notification)
                         .setColorized(true)
-                        .setContentTitle(title)
-                        .setContentText(message)
+                        .setContentTitle(data.getTitle())
+                        .setContentText(data.getMessage())
                         .setAutoCancel(true)
                         .setSound(defaultSoundUri)
-                        .setContentIntent(pendingIntent);
+                        .setContentIntent(pendingIntent)
+                        .setColor(getResources().getColor(R.color.colorAccent));
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        // Since android Oreo notification channel is needed.
         assert notificationManager != null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(channelId,
@@ -105,5 +106,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             e.printStackTrace();
         }
     }
+
 
 }
