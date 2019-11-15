@@ -1,5 +1,5 @@
 # DoopsFirebaseNotifications
-#Use Following php script to send notifications you can also use your own as per your need
+#### Use Following php script to send notifications you can also use your own as per your need
 ```php
 <?php
 $message =  $_POST['message'];
